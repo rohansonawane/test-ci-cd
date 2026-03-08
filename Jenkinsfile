@@ -38,7 +38,7 @@ pipeline {
           docker.image('maven:3.8.8-eclipse-temurin-8').inside {
             withSonarQubeEnv('sonarqube') {
               sh '''
-                mvn -B sonar:sonar \
+                mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar \
                   -Dsonar.projectKey=java-cicd-demo \
                   -Dsonar.projectName=java-cicd-demo \
                   -Dsonar.host.url=http://sonarqube:9000
