@@ -122,7 +122,7 @@ The following advanced enhancements are now included in this project:
    - Local script: `scripts/run-trivy-local.sh`
 
 5. **Monitoring via Prometheus and Grafana**
-   - Helm values: `monitoring/kube-prometheus-values.yaml`
+   - Helm values: `monitoring/prometheus-values.yaml`, `monitoring/grafana-values.yaml`
    - Install script: `scripts/install-monitoring.sh`
 
 ## Quick Validation for Improvements
