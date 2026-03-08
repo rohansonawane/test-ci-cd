@@ -3,7 +3,6 @@ pipeline {
 
   environment {
     IMAGE_NAME = 'DOCKER_HUB_USERNAME/java-cicd-demo:latest'
-    SONAR_TOKEN = 'squ_5ee65ec4f9d915e2f0251b8b1acd68a59114551b'
   }
 
   stages {
@@ -36,14 +35,16 @@ pipeline {
     stage('Static Analysis (Sonar on Java 11)') {
       steps {
         script {
-          docker.image('maven:3.9.9-eclipse-temurin-11').inside('--network cicd-network') {
-            sh '''
-              mvn -B sonar:sonar \
-                -Dsonar.projectKey=java-cicd-demo \
-                -Dsonar.projectName=java-cicd-demo \
-                -Dsonar.host.url=http://sonarqube:9000 \
-                -Dsonar.login=${SONAR_TOKEN}
-            '''
+          withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+            docker.image('maven:3.9.9-eclipse-temurin-11').inside('--network cicd-network') {
+              sh '''
+                mvn -B sonar:sonar \
+                  -Dsonar.projectKey=java-cicd-demo \
+                  -Dsonar.projectName=java-cicd-demo \
+                  -Dsonar.host.url=http://sonarqube:9000 \
+                  -Dsonar.login=${SONAR_TOKEN}
+              '''
+            }
           }
         }
       }
@@ -89,8 +90,10 @@ pipeline {
             passwordVariable: 'DOCKER_PASS'
           )]) {
             sh '''
-              sed "s|DOCKER_HUB_USERNAME|${DOCKER_USER}|g" k8s/deployment.yaml | kubectl apply -f -
-              kubectl rollout status deployment/java-cicd-demo
+              sed "s|DOCKER_HUB_USERNAME|${DOCKER_USER}|g" k8s/deployment.yaml > /tmp/deployment.yaml
+              docker cp /tmp/deployment.yaml minikube:/tmp/deployment.yaml
+              docker exec minikube kubectl apply -f /tmp/deployment.yaml
+              docker exec minikube kubectl rollout status deployment/java-cicd-demo
             '''
           }
         }
