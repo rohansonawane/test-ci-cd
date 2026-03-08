@@ -32,13 +32,13 @@ pipeline {
       }
     }
 
-    stage('Static Analysis with Java 8') {
+    stage('Static Analysis (Sonar on Java 11)') {
       steps {
         script {
-          docker.image('maven:3.8.8-eclipse-temurin-8').inside('--network cicd-network') {
+          docker.image('maven:3.9.9-eclipse-temurin-11').inside('--network cicd-network') {
             withSonarQubeEnv('sonarqube') {
               sh '''
-                mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar \
+                mvn -B sonar:sonar \
                   -Dsonar.projectKey=java-cicd-demo \
                   -Dsonar.projectName=java-cicd-demo \
                   -Dsonar.host.url=http://sonarqube:9000
