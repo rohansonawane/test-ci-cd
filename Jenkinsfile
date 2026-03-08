@@ -41,7 +41,8 @@ pipeline {
                 mvn -B sonar:sonar \
                   -Dsonar.projectKey=java-cicd-demo \
                   -Dsonar.projectName=java-cicd-demo \
-                  -Dsonar.host.url=http://sonarqube:9000
+                  -Dsonar.host.url=http://sonarqube:9000 \
+                  -Dsonar.login=${SONAR_AUTH_TOKEN}
               '''
             }
           }
