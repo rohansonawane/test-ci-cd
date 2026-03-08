@@ -92,8 +92,8 @@ pipeline {
             sh '''
               sed "s|DOCKER_HUB_USERNAME|${DOCKER_USER}|g" k8s/deployment.yaml > /tmp/deployment.yaml
               docker cp /tmp/deployment.yaml minikube:/tmp/deployment.yaml
-              docker exec minikube kubectl apply -f /tmp/deployment.yaml
-              docker exec minikube kubectl rollout status deployment/java-cicd-demo
+              docker exec minikube /var/lib/minikube/binaries/v1.35.1/kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /tmp/deployment.yaml
+              docker exec minikube /var/lib/minikube/binaries/v1.35.1/kubectl --kubeconfig=/etc/kubernetes/admin.conf rollout status deployment/java-cicd-demo
             '''
           }
         }
