@@ -1,0 +1,12 @@
+replicaCount: 2
+
+image:
+  repository: rsonawane2/java-cicd-demo
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8080
+  nodePort: 30007

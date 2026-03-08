@@ -12,6 +12,12 @@ pipeline {
       }
     }
 
+    stage('Helm Chart Lint') {
+      steps {
+        sh 'docker run --rm -v "$PWD":/work -w /work alpine/helm:3.14.4 lint helm/java-cicd-demo'
+      }
+    }
+
     stage('Build with Java 17') {
       steps {
         script {
@@ -62,6 +68,22 @@ pipeline {
             env.BUILT_IMAGE_NAME = builtImageName
             sh "docker build -t ${builtImageName} ."
           }
+        }
+      }
+    }
+
+    stage('Trivy Security Scan') {
+      steps {
+        script {
+          sh '''
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:0.58.1 image \
+              --severity HIGH,CRITICAL \
+              --ignore-unfixed \
+              --exit-code 0 \
+              "${BUILT_IMAGE_NAME}"
+          '''
         }
       }
     }

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: java-cicd-demo
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/rohansonawane/test-ci-cd.git
+    targetRevision: main
+    path: helm/java-cicd-demo
+    helm:
+      values: |
+        image:
+          repository: rsonawane2/java-cicd-demo
+          tag: latest
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,41 @@
+pipeline {
+  agent none
+
+  stages {
+    stage('Checkout') {
+      agent { label 'java17-agent' }
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Build with Java 17 Agent') {
+      agent { label 'java17-agent' }
+      steps {
+        sh 'mvn -B clean package -DskipTests'
+      }
+    }
+
+    stage('Test with Java 11 Agent') {
+      agent { label 'java11-agent' }
+      steps {
+        sh 'mvn -B test'
+      }
+    }
+
+    stage('Sonar Analysis with Java 11 Agent') {
+      agent { label 'java11-agent' }
+      steps {
+        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+          sh '''
+            mvn -B sonar:sonar \
+              -Dsonar.projectKey=java-cicd-demo \
+              -Dsonar.projectName=java-cicd-demo \
+              -Dsonar.host.url=http://sonarqube:9000 \
+              -Dsonar.login=${SONAR_TOKEN}
+          '''
+        }
+      }
+    }
+  }
+}

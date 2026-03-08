@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "java-cicd-demo.fullname" . }}
+  labels:
+    app: {{ include "java-cicd-demo.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "java-cicd-demo.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "java-cicd-demo.name" . }}
+    spec:
+      containers:
+        - name: {{ include "java-cicd-demo.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
