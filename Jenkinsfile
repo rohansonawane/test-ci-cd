@@ -90,9 +90,7 @@ pipeline {
             passwordVariable: 'DOCKER_PASS'
           )]) {
             sh '''
-              sed "s|DOCKER_HUB_USERNAME|${DOCKER_USER}|g" k8s/deployment.yaml > k8s/deployment.rendered.yaml
-              docker cp k8s/deployment.rendered.yaml minikube:/tmp/deployment.yaml
-              docker exec minikube /var/lib/minikube/binaries/v1.35.1/kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f /tmp/deployment.yaml
+              sed "s|DOCKER_HUB_USERNAME|${DOCKER_USER}|g" k8s/deployment.yaml | docker exec -i minikube /var/lib/minikube/binaries/v1.35.1/kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f -
               docker exec minikube /var/lib/minikube/binaries/v1.35.1/kubectl --kubeconfig=/etc/kubernetes/admin.conf rollout status deployment/java-cicd-demo
             '''
           }
