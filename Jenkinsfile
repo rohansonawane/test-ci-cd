@@ -15,7 +15,7 @@ pipeline {
     stage('Build with Java 17') {
       steps {
         script {
-          docker.image('maven:3.9.9-eclipse-temurin-17').inside {
+          docker.image('maven:3.9.9-eclipse-temurin-17').inside('--network cicd-network') {
             sh 'mvn -B clean package -DskipTests'
           }
         }
@@ -25,7 +25,7 @@ pipeline {
     stage('Run Tests with Java 11') {
       steps {
         script {
-          docker.image('maven:3.9.9-eclipse-temurin-11').inside {
+          docker.image('maven:3.9.9-eclipse-temurin-11').inside('--network cicd-network') {
             sh 'mvn -B test'
           }
         }
@@ -35,7 +35,7 @@ pipeline {
     stage('Static Analysis with Java 8') {
       steps {
         script {
-          docker.image('maven:3.8.8-eclipse-temurin-8').inside {
+          docker.image('maven:3.8.8-eclipse-temurin-8').inside('--network cicd-network') {
             withSonarQubeEnv('sonarqube') {
               sh '''
                 mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar \
